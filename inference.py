@@ -1,13 +1,13 @@
 import torch
 import torch.nn.functional as F
-from model.repghost import repghostnet_0_5x, repghostnet_0_8x, repghostnet_1_0x
+from model.repghost import repghostnet_0_5x, repghostnet_0_8x, repghostnet_1_0x, repghostnet_2_0x
 from torchvision import transforms
 from PIL import Image
 import argparse
 import os
 
 
-def load_model(checkpoint_path, model_size='0_5x', num_classes=7, device='cuda'):
+def load_model(checkpoint_path, model_size='2_0x', num_classes=7, device='cuda'):
     """加载训练好的模型"""
     # 创建模型
     if model_size == '0_5x':
@@ -16,6 +16,8 @@ def load_model(checkpoint_path, model_size='0_5x', num_classes=7, device='cuda')
         model = repghostnet_0_8x(num_classes=num_classes)
     elif model_size == '1_0x':
         model = repghostnet_1_0x(num_classes=num_classes)
+    elif model_size == '2_0x':
+        model = repghostnet_2_0x(num_classes=num_classes)
     else:
         raise ValueError(f'不支持的模型大小: {model_size}')
 
@@ -118,8 +120,8 @@ def main():
     # 模型参数
     parser.add_argument('--checkpoint', type=str, default='outputs/train/best_model.pth',
                         help='模型检查点路径 (默认: outputs/train/best_model.pth)')
-    parser.add_argument('--model_size', type=str, default='0_5x',
-                        choices=['0_5x', '0_8x', '1_0x'],
+    parser.add_argument('--model_size', type=str, default='2_0x',
+                        choices=['0_5x', '0_8x', '1_0x', '2_0x'],
                         help='模型大小')
     parser.add_argument('--num_classes', type=int, default=7,
                         help='类别数量')
