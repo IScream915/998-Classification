@@ -104,7 +104,7 @@ def main():
 
     # 训练配置选择
     print("\n🎯 选择训练配置:")
-    print("1. 快速测试 (5 epochs, batch_size=16)")
+    print("1. 快速测试 (10 epochs, batch_size=16)")
     print("2. 标准训练 (30 epochs, batch_size=32)")
     print("3. 完整训练 (50 epochs, batch_size=32)")
     print("4. 自定义训练")
@@ -121,7 +121,7 @@ def main():
 
             timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
             args = [
-                '--epochs', '5',
+                '--epochs', '10',
                 '--batch_size', '16',
                 '--img_size', '128',  # 更小的图像尺寸
                 '--output_dir', f'outputs/quick_test_{timestamp}',
@@ -144,7 +144,7 @@ def main():
             timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
             args = [
                 '--epochs', '30',
-                '--batch_size', '32',
+                '--batch_size', '64',
                 '--output_dir', f'outputs/standard_train_{timestamp}',
                 '--model_size', '2_0x'  # 使用 2_0x 模型
             ]
@@ -165,7 +165,7 @@ def main():
             timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
             args = [
                 '--epochs', '50',
-                '--batch_size', '32',
+                '--batch_size', '64',
                 '--output_dir', f'outputs/full_train_{timestamp}',
                 '--model_size', '2_0x'  # 使用 2_0x 模型
             ]

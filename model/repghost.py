@@ -378,25 +378,77 @@ class RepGhostNet(nn.Module):
         self.blocks = nn.Sequential(*stages)
 
         # building last several layers
+
+        # output_channel = 1280
+        # self.global_pool = nn.AdaptiveAvgPool2d((1, 1))
+        # self.conv_head = nn.Conv2d(
+        #     input_channel, output_channel, 1, 1, 0, bias=True,
+        # )
+        # self.act2 = nn.ReLU(inplace=True)
+        # self.classifier = nn.Linear(output_channel, num_classes)
+
+        # 采用 Max Pooling 改进平均池化
         output_channel = 1280
+
+        # [改进点 1]：保留平均池化，新增最大池化
+        # AvgPool: 关注整体（例如：画面整体是灰色的 -> 可能是公路）
         self.global_pool = nn.AdaptiveAvgPool2d((1, 1))
+        # MaxPool: 关注显著特征（例如：画面里有一个明显的隧道灯光 -> 肯定是隧道）
+        self.max_pool = nn.AdaptiveMaxPool2d((1, 1))
+
+        # [改进点 2]：调整 conv_head 的输入通道数
+        # 因为我们要把 avg 和 max 的结果拼接，所以输入通道数变成了原来的 2 倍
         self.conv_head = nn.Conv2d(
-            input_channel, output_channel, 1, 1, 0, bias=True,
+            input_channel * 2, output_channel, 1, 1, 0, bias=True,
         )
-        self.act2 = nn.ReLU(inplace=True)
+
+        # [改进点 3]：升级激活函数
+        # HardSwish 在深层特征处理上通常比 ReLU 更好，且不增加计算量
+        self.act2 = nn.Hardswish(inplace=True)
+
+        # [改进点 4]：加入 Dropout
+        # 你的数据集可能只有几千张，Dropout 对于防止过拟合至关重要
+        self.dropout = nn.Dropout(p=0.2)
+
         self.classifier = nn.Linear(output_channel, num_classes)
+
+    # def forward(self, x):
+    #     x = self.conv_stem(x)
+    #     x = self.bn1(x)
+    #     x = self.act1(x)
+    #     x = self.blocks(x)
+    #     x = self.global_pool(x)
+    #     x = self.conv_head(x)
+    #     x = self.act2(x)
+    #     x = x.view(x.size(0), -1)
+    #     if self.dropout > 0.0:
+    #         x = F.dropout(x, p=self.dropout, training=self.training)
+    #     x = self.classifier(x)
+    #     return x
 
     def forward(self, x):
         x = self.conv_stem(x)
         x = self.bn1(x)
         x = self.act1(x)
         x = self.blocks(x)
-        x = self.global_pool(x)
+
+        # [执行改进]：双路池化融合 (Dual Pooling)
+        x_avg = self.global_pool(x)
+        x_max = self.max_pool(x)
+
+        # 在通道维度（dim=1）进行拼接
+        # 假设 x 的通道是 960，拼接后变成 1920
+        x = torch.cat([x_avg, x_max], dim=1)
+
+        # 此时 conv_head 会把通道数从 1920 降维到 1280
         x = self.conv_head(x)
         x = self.act2(x)
+
         x = x.view(x.size(0), -1)
-        if self.dropout > 0.0:
-            x = F.dropout(x, p=self.dropout, training=self.training)
+
+        # 使用我们在 init 中定义的 dropout 层
+        x = self.dropout(x)
+
         x = self.classifier(x)
         return x
 
