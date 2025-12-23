@@ -2,6 +2,7 @@ import os
 import sys
 import subprocess
 import time
+from datetime import datetime
 
 def check_data_exists():
     """检查数据集是否存在"""
@@ -103,9 +104,9 @@ def main():
 
     # 训练配置选择
     print("\n🎯 选择训练配置:")
-    print("1. 快速测试 (10 epochs, batch_size=16)")
-    print("2. 标准训练 (50 epochs, batch_size=32)")
-    print("3. 完整训练 (100 epochs, batch_size=32)")
+    print("1. 快速测试 (5 epochs, batch_size=16)")
+    print("2. 标准训练 (30 epochs, batch_size=32)")
+    print("3. 完整训练 (50 epochs, batch_size=32)")
     print("4. 自定义训练")
     print("5. 仅推理测试")
     print("6. 断点续跑 (从检查点恢复训练)")
@@ -118,11 +119,12 @@ def main():
             print("\n快速测试配置:")
             use_pretrained = input("是否使用预训练权重 (weights/repghostnet_2_0x_weights.pth)? (y/N): ").strip().lower()
 
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
             args = [
-                '--epochs', '10',
+                '--epochs', '5',
                 '--batch_size', '16',
                 '--img_size', '128',  # 更小的图像尺寸
-                '--output_dir', 'outputs/quick_test',
+                '--output_dir', f'outputs/quick_test_{timestamp}',
                 '--model_size', '2_0x'  # 使用 2_0x 模型
             ]
 
@@ -139,10 +141,11 @@ def main():
             print("\n标准训练配置:")
             use_pretrained = input("是否使用预训练权重 (weights/repghostnet_2_0x_weights.pth)? (y/N): ").strip().lower()
 
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
             args = [
-                '--epochs', '50',
+                '--epochs', '30',
                 '--batch_size', '32',
-                '--output_dir', 'outputs/standard_train',
+                '--output_dir', f'outputs/standard_train_{timestamp}',
                 '--model_size', '2_0x'  # 使用 2_0x 模型
             ]
 
@@ -159,10 +162,11 @@ def main():
             print("\n完整训练配置:")
             use_pretrained = input("是否使用预训练权重 (weights/repghostnet_2_0x_weights.pth)? (y/N): ").strip().lower()
 
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
             args = [
-                '--epochs', '100',
+                '--epochs', '50',
                 '--batch_size', '32',
-                '--output_dir', 'outputs/full_train',
+                '--output_dir', f'outputs/full_train_{timestamp}',
                 '--model_size', '2_0x'  # 使用 2_0x 模型
             ]
 
@@ -183,12 +187,13 @@ def main():
             model_size = input("模型大小 0_5x/0_8x/1_0x/2_0x (默认2_0x): ").strip() or "2_0x"
             use_pretrained = input("是否使用预训练权重 (weights/repghostnet_2_0x_weights.pth)? (y/N): ").strip().lower()
 
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
             args = [
                 '--epochs', epochs,
                 '--batch_size', batch_size,
                 '--img_size', img_size,
                 '--model_size', model_size,
-                '--output_dir', 'outputs/custom_train'
+                '--output_dir', f'outputs/custom_train_{timestamp}'
             ]
 
             if use_pretrained in ['y', 'yes']:
@@ -205,7 +210,11 @@ def main():
 
             # 检查可用的模型
             available_models = []
-            model_dirs = ['outputs/train', 'outputs/quick_test', 'outputs/standard_train', 'outputs/full_train', 'outputs/custom_train']
+            model_dirs = ['outputs/train']
+            # 添加带时间戳的目录匹配模式
+            for pattern in ['outputs/quick_test_*', 'outputs/standard_train_*', 'outputs/full_train_*', 'outputs/custom_train_*']:
+                import glob as glob_module
+                model_dirs.extend(glob_module.glob(pattern))
 
             for model_dir in model_dirs:
                 if os.path.exists(model_dir):
@@ -329,7 +338,11 @@ def main():
 
             # 查找可用的检查点
             available_checkpoints = []
-            model_dirs = ['outputs/train', 'outputs/quick_test', 'outputs/standard_train', 'outputs/full_train', 'outputs/custom_train']
+            model_dirs = ['outputs/train']
+            # 添加带时间戳的目录匹配模式
+            for pattern in ['outputs/quick_test_*', 'outputs/standard_train_*', 'outputs/full_train_*', 'outputs/custom_train_*']:
+                import glob as glob_module
+                model_dirs.extend(glob_module.glob(pattern))
 
             for model_dir in model_dirs:
                 if os.path.exists(model_dir):
