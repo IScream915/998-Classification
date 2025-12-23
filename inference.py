@@ -170,7 +170,7 @@ def main():
     model = load_model(args.checkpoint, args.model_size, args.num_classes, device)
 
     if model is None:
-        print("❌ 模型加载失败，请检查检查点文件")
+        print("模型加载失败，请检查检查点文件")
         return
 
     # 进行推理
@@ -202,8 +202,12 @@ def main():
         results = batch_predict(model, args.image_dir, device, class_names,
                                args.img_size, args.top_k)
 
+        # 默认在输入目录下保存结果
+        if not args.output:
+            args.output = os.path.join(args.image_dir, 'result.csv')
+
     # 保存结果
-    if args.output and results:
+    if results:
         import csv
         with open(args.output, 'w', newline='', encoding='utf-8') as csvfile:
             fieldnames = ['filename', 'predicted_class', 'confidence']
