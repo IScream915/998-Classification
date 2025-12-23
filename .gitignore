@@ -1,6 +1,5 @@
 .idea/*
-/dataset/
+/dataset/*
 .idea
 /weights/
-/outputs/
-/outputs/quick_test/
+/outputs/*
