@@ -85,7 +85,7 @@ def run_training(config_name, args):
 def main():
     print("=" * 60)
     print("🎯 RepGhost 快速训练启动器")
-    print("💻 针对 MacBook Air M3 芯片优化")
+    # print("💻 针对 MacBook Air M3 芯片优化")
     print("=" * 60)
 
     # 环境检查
