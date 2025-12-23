@@ -103,9 +103,9 @@ def main():
 
     # 训练配置选择
     print("\n🎯 选择训练配置:")
-    print("1. 快速测试 (5 epochs, batch_size=8)")
-    print("2. 标准训练 (30 epochs, batch_size=16)")
-    print("3. 完整训练 (50 epochs, batch_size=16)")
+    print("1. 快速测试 (10 epochs, batch_size=16)")
+    print("2. 标准训练 (50 epochs, batch_size=32)")
+    print("3. 完整训练 (100 epochs, batch_size=32)")
     print("4. 自定义训练")
     print("5. 仅推理测试")
     print("6. 断点续跑 (从检查点恢复训练)")
@@ -119,8 +119,8 @@ def main():
             use_pretrained = input("是否使用预训练权重 (weights/repghostnet_2_0x_weights.pth)? (y/N): ").strip().lower()
 
             args = [
-                '--epochs', '5',
-                '--batch_size', '8',
+                '--epochs', '10',
+                '--batch_size', '16',
                 '--img_size', '128',  # 更小的图像尺寸
                 '--output_dir', 'outputs/quick_test',
                 '--model_size', '2_0x'  # 使用 2_0x 模型
@@ -140,8 +140,8 @@ def main():
             use_pretrained = input("是否使用预训练权重 (weights/repghostnet_2_0x_weights.pth)? (y/N): ").strip().lower()
 
             args = [
-                '--epochs', '30',
-                '--batch_size', '16',
+                '--epochs', '50',
+                '--batch_size', '32',
                 '--output_dir', 'outputs/standard_train',
                 '--model_size', '2_0x'  # 使用 2_0x 模型
             ]
@@ -160,8 +160,8 @@ def main():
             use_pretrained = input("是否使用预训练权重 (weights/repghostnet_2_0x_weights.pth)? (y/N): ").strip().lower()
 
             args = [
-                '--epochs', '50',
-                '--batch_size', '16',
+                '--epochs', '100',
+                '--batch_size', '32',
                 '--output_dir', 'outputs/full_train',
                 '--model_size', '2_0x'  # 使用 2_0x 模型
             ]
