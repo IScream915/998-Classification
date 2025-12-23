@@ -53,7 +53,7 @@ python simple_train.py
 
 ### 方法1: 使用快速启动器（推荐新手）
 ```bash
-python quick_start_train.py
+python train.py
 ```
 这将启动交互式界面，让您选择：
 - 快速测试
@@ -242,7 +242,7 @@ python inference.py --image_dir images/ --img_size 128 --output results.csv
 
 ### 方法2: 使用快速启动器
 ```bash
-python quick_start_train.py
+python train.py
 # 选择 "5. 仅推理测试"
 ```
 
