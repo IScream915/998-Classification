@@ -206,8 +206,8 @@ def main():
         if not args.output:
             args.output = os.path.join(args.image_dir, 'result.csv')
 
-    # 保存结果
-    if results:
+    # 保存结果（仅在指定了输出文件或批量预测时）
+    if results and args.output:
         import csv
         with open(args.output, 'w', newline='', encoding='utf-8') as csvfile:
             fieldnames = ['filename', 'predicted_class', 'confidence']
