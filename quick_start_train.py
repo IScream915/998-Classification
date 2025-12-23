@@ -255,26 +255,62 @@ def main():
 
             print(f"\n使用模型: {checkpoint_path}")
 
-            image_path = input("输入图片路径 (推荐: inference/b1cd1e94-26dd524f.jpg): ").strip()
+            # 选择推理模式
+            print("\n选择推理模式:")
+            print("1. 单张图片预测")
+            print("2. 文件夹批量预测")
 
-            if not image_path:
-                # 使用默认图片
-                default_image = "inference/b1cd1e94-26dd524f.jpg"
-                if os.path.exists(default_image):
-                    image_path = default_image
-                    print(f"使用默认图片: {image_path}")
-                else:
-                    print("没有提供图片路径且默认图片不存在，跳过推理测试")
+            mode_choice = input("请选择 (1-2, 默认1): ").strip() or "1"
+
+            args = ['--checkpoint', checkpoint_path]
+
+            if mode_choice == '1':
+                # 单张图片预测
+                image_path = input("输入图片路径 (推荐: inference/b1cd1e94-26dd524f.jpg): ").strip()
+
+                if not image_path:
+                    # 使用默认图片
+                    default_image = "inference/b1cd1e94-26dd524f.jpg"
+                    if os.path.exists(default_image):
+                        image_path = default_image
+                        print(f"使用默认图片: {image_path}")
+                    else:
+                        print("没有提供图片路径且默认图片不存在，跳过推理测试")
+                        return
+
+                if not os.path.exists(image_path):
+                    print(f"❌ 图片文件不存在: {image_path}")
                     return
 
-            if not os.path.exists(image_path):
-                print(f"❌ 图片文件不存在: {image_path}")
-                return
+                args.extend(['--image', image_path])
 
-            args = [
-                '--checkpoint', checkpoint_path,
-                '--image', image_path
-            ]
+            elif mode_choice == '2':
+                # 文件夹批量预测
+                dir_path = input("输入文件夹路径 (推荐: inference/demo): ").strip()
+
+                if not dir_path:
+                    # 使用默认文件夹
+                    default_dir = "inference/demo"
+                    if os.path.exists(default_dir):
+                        dir_path = default_dir
+                        print(f"使用默认文件夹: {dir_path}")
+                    else:
+                        print("没有提供文件夹路径且默认文件夹不存在，跳过推理测试")
+                        return
+
+                if not os.path.exists(dir_path):
+                    print(f"❌ 文件夹不存在: {dir_path}")
+                    return
+
+                if not os.path.isdir(dir_path):
+                    print(f"❌ 路径不是文件夹: {dir_path}")
+                    return
+
+                args.extend(['--image_dir', dir_path])
+
+            else:
+                print("❌ 无效选择")
+                return
 
             cmd = [sys.executable, 'inference.py'] + args
             print(f"\n运行推理: {' '.join(cmd)}")
